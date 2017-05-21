@@ -31,7 +31,7 @@ for page in range(2):
     r = requests.post(url % (page, size), headers=headers, data='{}')
     data = json.dumps(json.loads(r.content)['content'])
     datadf = pd.read_json(data)
-    finalInfo = pd.concat([finalInfo,datadf],axis=0)
-finalInfo.reset_index(drop=True,inplace=True)
+    finalInfo = pd.concat([finalInfo,datadf], axis=0)
+finalInfo.reset_index(drop=True, inplace=True)
 # finalInfo.to_csv(savepath+'/'+ filename,header=True)
 # finalInfo['trueURL'] = finalInfo['managerUrl'].apply(lambda x : x.split('/')[-1])  # customize
