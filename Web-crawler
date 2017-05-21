@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+ 
+
+import json
+import requests
+import pandas as pd
+
+headers = {
+    'Accept':'application/json, text/javascript, */*; q=0.01',
+    'Accept-Encoding':'gzip, deflate',
+    'Accept-Language':'en-US,en;q=0.8,ja;q=0.6,zh-CN;q=0.4',
+    'Cache-Control':'no-cache',
+    'Connection':'keep-alive',
+    'Content-Length':'2',
+    'Content-Type':'application/json',
+    'Host':'gs.amac.org.cn',
+    'Origin':'http://gs.amac.org.cn',
+    'Pragma':'no-cache',
+    'Referer':'http://gs.amac.org.cn/amac-infodisc/res/pof/fund/index.html',
+    'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
+    'X-Requested-With':'XMLHttpRequest',
+}
+page = 0
+size = 20
+
+finalInfo = pd.DataFrame()
+for page in range(2):
+    
+    url = 'http://gs.amac.org.cn/amac-infodisc/api/pof/fund?rand=0.8005212553364454&page=%d&size=%d'
+    r = requests.post(url % (page, size), headers=headers, data='{}')
+    data = json.dumps(json.loads(r.content)['content'])
+    datadf = pd.read_json(data)
+    finalInfo = pd.concat([finalInfo,datadf],axis=0)
+finalInfo.reset_index(drop=True,inplace=True)
+# finalInfo.to_csv(savepath+'/'+ filename,header=True)
+# finalInfo['trueURL'] = finalInfo['managerUrl'].apply(lambda x : x.split('/')[-1])  # customize
