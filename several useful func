@@ -1,0 +1,66 @@
+# check whether the fund has its own website
+def have_own_website(suffix):
+    Flag = False
+    surl = 'http://gs.amac.org.cn/amac-infodisc/res/pof/manager/' + suffix
+
+    # 使用requests获取网页
+    r = requests.get( surl)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    
+    for item in soup.find_all('a', href=True):
+        if item['href'].endswith('void(0);'):
+            base = soup('a',{'href':item['href']})[0].contents[0] # 返回 href后面对应的文字
+            print base  
+            Flag = True
+            break
+    return Flag
+    
+ # check whether the fund is quantative or not
+import requests
+from bs4 import BeautifulSoup
+
+suffix = '101000000172.html'
+target = [u'量化',u'对冲']
+
+def is_true_quant(suffix):
+    Flag = False
+    surl = 'http://gs.amac.org.cn/amac-infodisc/res/pof/manager/' + suffix
+
+    # 使用requests获取网页
+    r = requests.get( surl)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    
+    for item in soup.find_all('a', href=True):
+        if item['href'].endswith('html'):
+            base = soup('a',{'href':item['href']})[0].contents[0] # 返回 href后面对应的文字
+            print base  
+            if  target[0] in base or target[1] in base:
+                Flag = True
+                break
+    return Flag
+    
+# save to xlsx with multiple sheets
+
+import xlsxwriter
+
+citydic = {u'上海':1, u'北京':2, u'深圳':3, u'杭州':4 ,u'其他':5 }
+
+def save_xls(list_dfs, xls_path):
+    writer = ExcelWriter(xls_path)
+    for n, df in enumerate(list_dfs):
+        df.to_excel(writer,'sheet%s' % n)
+      
+from pandas import ExcelWriter
+
+savepath = 'C:/Users/LZJF_02/Desktop/myjob/web_crawling/fundlist/'
+writer = ExcelWriter(savepath+'guwen.xlsx',engine='xlsxwriter')
+
+for i,j in citydic.iteritems():
+    temp = totaldata[totaldata['regisCity'] == j]
+    temp.sort_values('quantFund',inplace = True)
+    temp.drop('regisCity',axis =1,inplace = True)
+    temp.set_index('id',inplace = True)
+    temp.to_excel(writer,'%s' % i)
+  
+writer.save()
+    writer.save()
